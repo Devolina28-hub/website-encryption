@@ -2,82 +2,129 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Smart Encryptor</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <title>Image Encryption Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .panel {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        img {
+            max-width: 100%;
+            margin-top: 10px;
+            border: 1px solid #eee;
+        }
+        button {
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .encrypted {
+            border-color: red;
+        }
+        .decrypted {
+            border-color: green;
+        }
+    </style>
 </head>
 <body>
-
-    <!-- HOME PAGE -->
-    <h1>LOCK YOUR DATA WITH ENCRYPTION, UNLOCK IT WITH DECRYPTION—SEAMLESSLY AND SECURELY</h1>
-
-    <div class="main-frame" id="home">
-        <h2>DO YOU WANT TO:</h2>
-        <button class="futuristic-button" onclick="showEncryptPage()">ENCRYPT DATA</button>
-        <br>
-        <button class="futuristic-button" onclick="showDecryptPage()">DECRYPT DATA</button>
+    <h1>Image Encryption Demo</h1>
+    
+    <div class="container">
+        <div class="panel">
+            <h2>Original Image</h2>
+            <input type="file" id="imageInput" accept="image/*">
+            <button onclick="encryptImage()">Encrypt Image</button>
+            <div id="originalPreview"></div>
+        </div>
+        
+        <div class="panel">
+            <h2>Encrypted Image</h2>
+            <div id="encryptedPreview"></div>
+            <div id="passkeyDisplay"></div>
+        </div>
+        
+        <div class="panel">
+            <h2>Decrypt Image</h2>
+            <input type="text" id="keyInput" placeholder="Enter passkey">
+            <button onclick="decryptImage()">Decrypt Image</button>
+            <div id="decryptedPreview"></div>
+        </div>
     </div>
 
-    <!-- ENCRYPT PAGE -->
-    <div id="encryptPage" class="page hidden">
-        <h2>Select Encryption Type:</h2>
-        <button class="futuristic-button" onclick="showImageEncrypt()">Image Encryption</button>
-        <button class="futuristic-button" onclick="showTextEncrypt()">Text Encryption</button>
-        <br>
-        <button class="futuristic-button" onclick="goHome()">🔙 Back</button>
-    </div>
+    <script>
+        let currentEncryptedData = null;
+        let currentPasskey = null;
 
-    <!-- DECRYPT PAGE -->
-    <div id="decryptPage" class="page hidden">
-        <h2>Select Decryption Type:</h2>
-        <button class="futuristic-button" onclick="showImageDecrypt()">Image Decryption</button>
-        <button class="futuristic-button" onclick="showTextDecrypt()">Text Decryption</button>
-        <br>
-        <button class="futuristic-button" onclick="goHome()">🔙 Back</button>
-    </div>
+        function encryptImage() {
+            const file = document.getElementById('imageInput').files[0];
+            if (!file) {
+                alert('Please select an image first');
+                return;
+            }
 
-    <!-- IMAGE ENCRYPT PAGE -->
-    <div id="imageEncryptPage" class="page hidden">
-        <h2>Image Encryption</h2>
-        <input type="file" id="imageInput" accept="image/*">
-        <button class="futuristic-button" onclick="encryptImage()">Encrypt</button>
-        <div id="imagePasskey"></div>
-        <br>
-        <button class="futuristic-button" onclick="showEncryptPage()">🔙 Back</button>
-    </div>
+            // Display original image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const originalPreview = document.getElementById('originalPreview');
+                originalPreview.innerHTML = `<img src="${e.target.result}" alt="Original Image">`;
+                
+                // Generate passkey
+                currentPasskey = Math.random().toString(36).slice(2, 10).toUpperCase();
+                
+                // Simple XOR encryption (for demo only)
+                const base64Data = e.target.result.split(',')[1];
+                const encryptedData = xorEncrypt(base64Data, currentPasskey);
+                const encryptedImageUrl = `data:image/png;base64,${encryptedData}`;
+                
+                // Store encrypted data
+                currentEncryptedData = encryptedImageUrl;
+                
+                // Display encrypted image
+                const encryptedPreview = document.getElementById('encryptedPreview');
+                encryptedPreview.innerHTML = `
+                    <img src="${encryptedImageUrl}" class="encrypted" alt="Encrypted Image">
+                    <p>This is what the encrypted image looks like</p>
+                `;
+                
+                // Display passkey
+                document.getElementById('passkeyDisplay').innerHTML = `
+                    <p><strong>Passkey:</strong> ${currentPasskey}</p>
+                    <button onclick="copyPasskey()">Copy Passkey</button>
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
 
-    <!-- TEXT ENCRYPT PAGE -->
-    <div id="textEncryptPage" class="page hidden">
-        <h2>Text Encryption</h2>
-        <textarea id="textInput" rows="6" placeholder="Enter text to encrypt..."></textarea>
-        <button class="futuristic-button" onclick="encryptText()">Encrypt</button>
-        <div id="textPasskey"></div>
-        <br>
-        <button class="futuristic-button" onclick="showEncryptPage()">🔙 Back</button>
-    </div>
-
-    <!-- IMAGE DECRYPT PAGE -->
-    <div id="imageDecryptPage" class="page hidden">
-        <h2>Image Decryption</h2>
-        <input type="text" id="imageKeyInput" placeholder="Enter image passkey...">
-        <button class="futuristic-button" onclick="decryptImage()">Decrypt</button>
-        <div id="imageError" class="error"></div>
-        <img id="decryptedImage" class="hidden" />
-        <br>
-        <button class="futuristic-button" onclick="showDecryptPage()">🔙 Back</button>
-    </div>
-
-    <!-- TEXT DECRYPT PAGE -->
-    <div id="textDecryptPage" class="page hidden">
-        <h2>Text Decryption</h2>
-        <input type="text" id="textKeyInput" placeholder="Enter text passkey...">
-        <button class="futuristic-button" onclick="decryptText()">Decrypt</button>
-        <div id="textError" class="error"></div>
-        <div id="decryptedText" class="message"></div>
-        <br>
-        <button class="futuristic-button" onclick="showDecryptPage()">🔙 Back</button>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+        function decryptImage() {
+            const keyInput = document.getElementById('keyInput').value.trim();
+            if (!keyInput) {
+                alert('Please enter the passkey');
+                return;
+            }
+            
+            if (!currentEncryptedData) {
+                alert('No encrypted data available');
+                return;
+            }
+            
+            try {
+                // Get encrypted data
+                const encryptedData = currentEncryptedData.split(',')[1];
+                
+                // Decrypt
+                const decryptedData = xorEncrypt(atob(encryptedData), keyInput
