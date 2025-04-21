@@ -8,9 +8,9 @@
 </head>
 <body>
 
+    <!-- HOME PAGE -->
     <h1>LOCK YOUR DATA WITH ENCRYPTION, UNLOCK IT WITH DECRYPTION—SEAMLESSLY AND SECURELY</h1>
 
-    <!-- HOME PAGE -->
     <div class="main-frame" id="home">
         <h2>DO YOU WANT TO:</h2>
         <button class="futuristic-button" onclick="showEncryptPage()">ENCRYPT DATA</button>
@@ -40,7 +40,7 @@
     <div id="imageEncryptPage" class="page hidden">
         <h2>Image Encryption</h2>
         <input type="file" id="imageInput" accept="image/*">
-        <button class="futuristic-button" onclick="encryptImage()">Encrypt</button>
+        <button class="futuristic-button" onclick="encryptImage()">Encrypt & Save</button>
         <div id="imagePasskey"></div>
         <br>
         <button class="futuristic-button" onclick="showEncryptPage()">🔙 Back</button>
@@ -50,7 +50,7 @@
     <div id="textEncryptPage" class="page hidden">
         <h2>Text Encryption</h2>
         <textarea id="textInput" rows="6" placeholder="Enter text to encrypt..."></textarea>
-        <button class="futuristic-button" onclick="encryptText()">Encrypt</button>
+        <button class="futuristic-button" onclick="encryptText()">Encrypt & Save</button>
         <div id="textPasskey"></div>
         <br>
         <button class="futuristic-button" onclick="showEncryptPage()">🔙 Back</button>
@@ -81,4 +81,5 @@
     <script src="script.js"></script>
 </body>
 </html>
+
 
