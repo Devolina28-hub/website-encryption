@@ -40,7 +40,17 @@ function generatePasskey() {
     return Math.random().toString(36).slice(2, 10).toUpperCase();
 }
 
-// Encrypt Image and Save
+// Helper: Download a file
+function downloadFile(dataUrl, filename) {
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+// Encrypt Image
 function encryptImage() {
     let file = document.getElementById('imageInput').files[0];
     if (!file) {
@@ -52,22 +62,20 @@ function encryptImage() {
     let reader = new FileReader();
 
     reader.onload = function(event) {
-        let imageData = event.target.result;
-        encryptedData[passkey] = { type: 'image', data: imageData };
+        const dataUrl = event.target.result;
+        encryptedData[passkey] = { type: 'image', data: dataUrl };
 
         document.getElementById('imagePasskey').innerHTML = `<span class="green-text">Passkey: ${passkey}</span>`;
         showPopupMessage("✅ Image Encrypted!");
 
-        let link = document.createElement("a");
-        link.href = imageData;
-        link.download = `encrypted_image_${passkey}.png`;
-        link.click();
+        // Trigger download
+        downloadFile(dataUrl, `encrypted_image_${passkey}.png`);
     };
 
     reader.readAsDataURL(file);
 }
 
-// Encrypt Text and Save
+// Encrypt Text
 function encryptText() {
     let text = document.getElementById('textInput').value;
     if (!text) {
@@ -81,11 +89,11 @@ function encryptText() {
     document.getElementById('textPasskey').innerHTML = `<span class="green-text">Passkey: ${passkey}</span>`;
     showPopupMessage("✅ Text Encrypted!");
 
-    let blob = new Blob([text], { type: 'text/plain' });
-    let link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `encrypted_text_${passkey}.txt`;
-    link.click();
+    // Create a Blob and trigger download
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    downloadFile(url, `encrypted_text_${passkey}.txt`);
+    URL.revokeObjectURL(url);
 }
 
 // Decrypt Image
@@ -132,4 +140,5 @@ function showPopupMessage(message) {
         popup.remove();
     }, 2000);
 }
+
 
