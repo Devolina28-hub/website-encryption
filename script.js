@@ -1,4 +1,3 @@
-// Navigation Functions
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
     document.getElementById('home').classList.add('hidden');
@@ -18,7 +17,6 @@ function showTextEncrypt() { showPage('textEncryptPage'); resetFields(); }
 function showImageDecrypt() { showPage('imageDecryptPage'); resetFields(); }
 function showTextDecrypt() { showPage('textDecryptPage'); resetFields(); }
 
-// Reset Fields
 function resetFields() {
     document.getElementById('imageInput').value = "";
     document.getElementById('textInput').value = "";
@@ -32,25 +30,12 @@ function resetFields() {
     document.getElementById('decryptedText').textContent = "";
 }
 
-// Storage for encrypted data
 let encryptedData = {};
 
-// Generate Unique Passkey
 function generatePasskey() {
     return Math.random().toString(36).slice(2, 10).toUpperCase();
 }
 
-// Helper: Download a file
-function downloadFile(dataUrl, filename) {
-    const a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
-
-// Encrypt Image
 function encryptImage() {
     let file = document.getElementById('imageInput').files[0];
     if (!file) {
@@ -62,20 +47,23 @@ function encryptImage() {
     let reader = new FileReader();
 
     reader.onload = function(event) {
-        const dataUrl = event.target.result;
-        encryptedData[passkey] = { type: 'image', data: dataUrl };
+        let base64Data = event.target.result;
+        let encrypted = CryptoJS.AES.encrypt(base64Data, passkey).toString();
+        encryptedData[passkey] = { type: 'image', data: encrypted };
 
         document.getElementById('imagePasskey').innerHTML = `<span class="green-text">Passkey: ${passkey}</span>`;
         showPopupMessage("✅ Image Encrypted!");
 
-        // Trigger download
-        downloadFile(dataUrl, `encrypted_image_${passkey}.png`);
+        // Optionally download encrypted content
+        const blob = new Blob([encrypted], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        downloadFile(url, `encrypted_image_${passkey}.txt`);
+        URL.revokeObjectURL(url);
     };
 
     reader.readAsDataURL(file);
 }
 
-// Encrypt Text
 function encryptText() {
     let text = document.getElementById('textInput').value;
     if (!text) {
@@ -84,24 +72,26 @@ function encryptText() {
     }
 
     let passkey = generatePasskey();
-    encryptedData[passkey] = { type: 'text', data: text };
+    let encrypted = CryptoJS.AES.encrypt(text, passkey).toString();
 
+    encryptedData[passkey] = { type: 'text', data: encrypted };
     document.getElementById('textPasskey').innerHTML = `<span class="green-text">Passkey: ${passkey}</span>`;
     showPopupMessage("✅ Text Encrypted!");
 
-    // Create a Blob and trigger download
-    const blob = new Blob([text], { type: 'text/plain' });
+    const blob = new Blob([encrypted], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     downloadFile(url, `encrypted_text_${passkey}.txt`);
     URL.revokeObjectURL(url);
 }
 
-// Decrypt Image
 function decryptImage() {
     let passkey = document.getElementById('imageKeyInput').value;
 
     if (encryptedData[passkey] && encryptedData[passkey].type === 'image') {
-        document.getElementById('decryptedImage').src = encryptedData[passkey].data;
+        let decrypted = CryptoJS.AES.decrypt(encryptedData[passkey].data, passkey);
+        let base64 = decrypted.toString(CryptoJS.enc.Utf8);
+
+        document.getElementById('decryptedImage').src = base64;
         document.getElementById('decryptedImage').classList.remove('hidden');
         document.getElementById('imageError').textContent = "";
 
@@ -113,12 +103,14 @@ function decryptImage() {
     }
 }
 
-// Decrypt Text
 function decryptText() {
     let passkey = document.getElementById('textKeyInput').value;
 
     if (encryptedData[passkey] && encryptedData[passkey].type === 'text') {
-        document.getElementById('decryptedText').textContent = encryptedData[passkey].data;
+        let decrypted = CryptoJS.AES.decrypt(encryptedData[passkey].data, passkey);
+        let text = decrypted.toString(CryptoJS.enc.Utf8);
+
+        document.getElementById('decryptedText').textContent = text;
         document.getElementById('textError').textContent = "";
 
         delete encryptedData[passkey];
@@ -129,7 +121,15 @@ function decryptText() {
     }
 }
 
-// Show Popup Messages
+function downloadFile(url, filename) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
 function showPopupMessage(message) {
     let popup = document.createElement("div");
     popup.className = "popup-message";
