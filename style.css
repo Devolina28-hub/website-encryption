@@ -45,12 +45,6 @@ h1, h2 {
     box-shadow: 0 0 20px #00c3ff, 0 0 40px #00c3ff;
 }
 
-.futuristic-button.small {
-    padding: 8px 16px;
-    font-size: 14px;
-    margin: 5px 0;
-}
-
 input, textarea {
     display: block;
     margin: 10px auto;
@@ -96,24 +90,6 @@ img {
     animation: fadeOut 2s ease-in-out;
 }
 
-.image-preview {
-    margin: 20px 0;
-    padding: 10px;
-    border: 1px solid #444;
-    border-radius: 5px;
-}
-
-.image-preview h3 {
-    margin: 5px 0;
-    font-size: 16px;
-}
-
-.note {
-    font-size: 12px;
-    color: #aaa;
-    margin: 5px 0;
-}
-
 @keyframes fadeOut {
     0% { opacity: 1; }
     100% { opacity: 0; }
@@ -123,3 +99,4 @@ img {
     color: #00ff00;
     font-weight: bold;
 }
+
