@@ -5,10 +5,10 @@
     <title>Smart Encryptor</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
 <body>
 
-    <!-- HOME PAGE -->
     <h1>LOCK YOUR DATA WITH ENCRYPTION, UNLOCK IT WITH DECRYPTION—SEAMLESSLY AND SECURELY</h1>
 
     <div class="main-frame" id="home">
@@ -18,7 +18,6 @@
         <button class="futuristic-button" onclick="showDecryptPage()">DECRYPT DATA</button>
     </div>
 
-    <!-- ENCRYPT PAGE -->
     <div id="encryptPage" class="page hidden">
         <h2>Select Encryption Type:</h2>
         <button class="futuristic-button" onclick="showImageEncrypt()">Image Encryption</button>
@@ -27,7 +26,6 @@
         <button class="futuristic-button" onclick="goHome()">🔙 Back</button>
     </div>
 
-    <!-- DECRYPT PAGE -->
     <div id="decryptPage" class="page hidden">
         <h2>Select Decryption Type:</h2>
         <button class="futuristic-button" onclick="showImageDecrypt()">Image Decryption</button>
@@ -36,27 +34,24 @@
         <button class="futuristic-button" onclick="goHome()">🔙 Back</button>
     </div>
 
-    <!-- IMAGE ENCRYPT PAGE -->
     <div id="imageEncryptPage" class="page hidden">
         <h2>Image Encryption</h2>
         <input type="file" id="imageInput" accept="image/*">
-        <button class="futuristic-button" onclick="encryptImage()">Encrypt & Save</button>
+        <button class="futuristic-button" onclick="encryptImage()">Encrypt</button>
         <div id="imagePasskey"></div>
         <br>
         <button class="futuristic-button" onclick="showEncryptPage()">🔙 Back</button>
     </div>
 
-    <!-- TEXT ENCRYPT PAGE -->
     <div id="textEncryptPage" class="page hidden">
         <h2>Text Encryption</h2>
         <textarea id="textInput" rows="6" placeholder="Enter text to encrypt..."></textarea>
-        <button class="futuristic-button" onclick="encryptText()">Encrypt & Save</button>
+        <button class="futuristic-button" onclick="encryptText()">Encrypt</button>
         <div id="textPasskey"></div>
         <br>
         <button class="futuristic-button" onclick="showEncryptPage()">🔙 Back</button>
     </div>
 
-    <!-- IMAGE DECRYPT PAGE -->
     <div id="imageDecryptPage" class="page hidden">
         <h2>Image Decryption</h2>
         <input type="text" id="imageKeyInput" placeholder="Enter image passkey...">
@@ -67,7 +62,6 @@
         <button class="futuristic-button" onclick="showDecryptPage()">🔙 Back</button>
     </div>
 
-    <!-- TEXT DECRYPT PAGE -->
     <div id="textDecryptPage" class="page hidden">
         <h2>Text Decryption</h2>
         <input type="text" id="textKeyInput" placeholder="Enter text passkey...">
@@ -81,5 +75,6 @@
     <script src="script.js"></script>
 </body>
 </html>
+
 
 
